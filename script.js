@@ -383,6 +383,14 @@ function loadHomePageData() {
                 });
                 return obj;
             });
+
+            // Menyortir acara dari yang paling awal
+            events.sort((a, b) => {
+                const dateA = parseDate(a['Start Date'], a['Start time']);
+                const dateB = parseDate(b['Start Date'], b['Start time']);
+                return dateA - dateB;
+            });
+            
             renderEvents(events);
         } else {
             renderEvents([]);
