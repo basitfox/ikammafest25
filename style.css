@@ -1,3 +1,4 @@
+/* style.css */
 @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
 
@@ -772,4 +773,107 @@ body {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* --- Audio Page Styles --- */
+.audio-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: var(--card-background);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 10px;
+    position: relative;
+    overflow: hidden;
+    transition: background-color 0.2s ease;
+}
+
+.audio-item.playing {
+    background-color: var(--background-color);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.audio-item-title {
+    font-weight: 600;
+    font-size: 16px;
+    flex-grow: 1;
+    margin-right: 10px;
+}
+
+.audio-player-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    flex-shrink: 0;
+}
+
+.audio-player-button:hover {
+    background-color: #0056b3;
+}
+
+.audio-player-button .material-symbols-rounded {
+    font-size: 28px;
+    color: white;
+    font-variation-settings: 'FILL' 1;
+}
+
+/* --- Progress bar di dalam item --- */
+.audio-item-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    /* Atur tinggi jadi 0 agar hanya progress bar yang terlihat */
+    height: 0px; 
+    display: flex;
+    align-items: center;
+    /* Perubahan di sini: justify-content untuk menyejajarkan item di kiri dan kanan */
+    justify-content: center; 
+    padding: 0 10px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+.audio-item.playing .audio-item-footer {
+    /* Atur tinggi menjadi 30px saat playing untuk menampilkan info durasi */
+    height: 30px; 
+}
+
+/* Progress bar yang menempel di bagian bawah */
+.audio-progress-line {
+    position: absolute;
+    bottom: 0; /* Menempel di bagian bawah item */
+    left: 0;
+    height: 7px; /* Ketebalan garis progress bar */
+    width: 0%;
+    background-color: var(--primary-color);
+    transition: background-color 0.2s ease;
+}
+
+.audio-time-info {
+    font-size: 12px;
+    color: var(--light-text-color);
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    /* Sembunyikan info waktu secara default */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+}
+
+.audio-item.playing .audio-time-info {
+    /* Tampilkan info waktu saat playing */
+    opacity: 1;
+    visibility: visible;
 }
