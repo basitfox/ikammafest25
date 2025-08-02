@@ -1,0 +1,775 @@
+@import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+
+:root {
+  --primary-color: #007AFF; /* Apple Blue */
+  --secondary-color: #34C759; /* Apple Green */
+  --tertiary-color: #FF3B30; /* Apple Red */
+  --accent-color: #5856D6; /* Apple Purple */
+  --background-color: #F2F2F7; /* Light Gray Background */
+  --card-background: #FFFFFF;
+  --text-color: #000000;
+  --light-text-color: #8E8E93;
+  --border-color: #E5E5EA;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --border-radius: 12px;
+}
+
+body {
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  margin: 0;
+  padding: 0;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.page {
+  display: none;
+  padding-bottom: 80px; /* Memberi ruang untuk navbar */
+}
+
+.page.active {
+  display: block;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  background-color: var(--card-background);
+  padding: 16px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+}
+
+.header img {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  margin-right: 15px;
+  object-fit: cover;
+}
+
+.header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.section {
+  background-color: var(--card-background);
+  border-radius: var(--border-radius);
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* RAB Styles */
+.saldo-section {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.saldo-section .section-title,
+.saldo-section .section-title .material-symbols-rounded,
+.saldo-section .total-saldo {
+  color: white;
+  font-variation-settings: 'FILL' 1;
+}
+
+.saldo-section .spinner {
+  border-top: 4px solid rgba(255, 255, 255, 0.7);
+}
+
+.total-saldo {
+  font-size: 32px;
+  font-weight: 700;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.info-box-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.info-box {
+  background-color: var(--background-color);
+  border-radius: 10px;
+  padding: 15px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.info-box .material-symbols-rounded {
+  font-size: 30px;
+  margin-bottom: 8px;
+  font-variation-settings: 'FILL' 1;
+}
+
+.info-box.pemasukan {
+  color: var(--secondary-color);
+}
+
+.info-box.pengeluaran {
+  color: var(--tertiary-color);
+}
+
+.info-box .label {
+  font-size: 14px;
+  color: var(--light-text-color);
+  margin-bottom: 5px;
+}
+
+.info-box .value {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.category-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.category-table th, .category-table td {
+  padding: 10px 8px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.category-table th {
+  font-weight: 600;
+  color: var(--light-text-color);
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+.category-table td:nth-child(2),
+.category-table td:nth-child(3) {
+  text-align: right;
+}
+
+.category-table tr:last-child td {
+  border-bottom: none;
+}
+
+.progress-bar-container {
+  background-color: var(--background-color);
+  border-radius: 4px;
+  height: 6px;
+  overflow: hidden;
+  margin-top: 5px;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: var(--primary-color);
+  border-radius: 4px;
+}
+
+/* Transaksi Terkini Styles */
+.tab-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tab-button {
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.tab-button.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.list-view {
+    
+}
+
+.list-item {
+    background-color: var(--card-background);
+    border-radius: var(--border-radius);
+    padding: 15px;
+    margin-bottom: 10px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+}
+
+.list-item:last-child {
+    margin-bottom: 0;
+}
+
+.list-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.list-item-date {
+    font-size: 14px;
+    color: var(--light-text-color);
+}
+
+.list-item-nominal {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.list-item-nominal.pemasukan {
+    color: var(--secondary-color);
+}
+
+.list-item-nominal.pengeluaran {
+    color: var(--tertiary-color);
+}
+
+.list-item-description {
+    font-size: 16px;
+    font-weight: 500;
+    margin-top: 5px;
+}
+
+.list-item-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.list-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background-color: var(--background-color);
+    padding: 6px 10px;
+    border-radius: 16px;
+    font-size: 12px;
+    color: var(--text-color);
+}
+
+.list-chip .material-symbols-rounded {
+    font-size: 16px;
+    color: var(--light-text-color);
+}
+
+.proof-chip {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.proof-chip:hover {
+    background-color: #0056b3;
+}
+
+.proof-chip .material-symbols-rounded {
+    font-size: 18px;
+    color: white;
+}
+
+.button-load-all {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin-top: 20px;
+    background-color: #f0f0f0;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    color: var(--text-color);
+    transition: background-color 0.2s ease;
+}
+
+.button-load-all:hover {
+    background-color: #e0e0e0;
+}
+
+.button-load-all:active {
+    background-color: #d0d0d0;
+}
+
+/* Global Actions (dihapus) */
+.page-actions {
+    display: none;
+}
+
+/* Navbar */
+.navbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--card-background);
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    border-top: 1px solid var(--border-color);
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+    z-index: 1000;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: var(--light-text-color);
+    font-size: 12px;
+    font-weight: 500;
+    transition: color 0.2s ease;
+    cursor: pointer;
+    flex: 1;
+    text-align: center;
+}
+
+.nav-item.active {
+    color: var(--primary-color);
+}
+
+.nav-item .material-symbols-rounded {
+    font-size: 28px;
+    margin-bottom: 4px;
+    font-variation-settings: 'FILL' 1;
+}
+
+/* --- Home Page Styles --- */
+.event-section-container {
+    margin-bottom: 20px;
+}
+.event-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.event-card {
+    background-color: var(--card-background);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    display: flex;
+    cursor: pointer;
+    position: relative;
+    border-left: 5px solid var(--primary-color);
+}
+
+.event-card-date {
+    width: 80px;
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+    text-align: center;
+    padding: 15px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+}
+
+.event-card-date .day {
+    font-size: 24px;
+    line-height: 1;
+}
+
+.event-card-content {
+    flex-grow: 1;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+}
+
+.event-card-image {
+    width: 100px;
+    height: 80px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.event-card-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.event-card-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.event-card.ongoing {
+    border-left-color: var(--secondary-color);
+}
+.event-card.ongoing .event-card-date {
+    background-color: var(--secondary-color);
+}
+.event-card.upcoming {
+    border-left-color: var(--primary-color);
+}
+.event-card.upcoming .event-card-date {
+    background-color: var(--primary-color);
+}
+.event-card.past {
+    border-left-color: var(--light-text-color);
+    opacity: 0.7;
+}
+.event-card.past .event-card-date {
+    background-color: var(--light-text-color);
+}
+
+/* --- Home Page Styles (Tambahan untuk Chip Status) --- */
+.event-status-chip {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 4px 10px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.event-status-chip.upcoming {
+    background-color: var(--primary-color);
+}
+
+.event-status-chip.ongoing {
+    background-color: var(--tertiary-color); /* Merah untuk sedang berlangsung */
+}
+
+.event-status-chip.past {
+    background-color: var(--light-text-color);
+}
+
+/* --- Modal Styles (Tambahan untuk chip di modal) --- */
+.modal-content .event-status-chip {
+    position: static;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+/* Gaya baru untuk tampilan detail di modal */
+.modal-detail-row-icon {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+.modal-detail-row-icon .material-symbols-rounded {
+    flex-shrink: 0;
+}
+.modal-detail-row-icon p {
+    margin: 0;
+    white-space: pre-wrap; /* Mempertahankan baris baru */
+    word-break: break-word; /* Mencegah overflow */
+}
+
+/* Tambahan untuk styling judul di modal */
+.modal-detail-title {
+    font-weight: 600;
+    color: var(--text-color);
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+
+/* --- Todo Page Styles --- */
+.todo-list-category {
+    margin-bottom: 20px;
+}
+
+.todo-list-category .category-header {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text-color);
+    padding-left: 10px;
+}
+
+.todo-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background-color: var(--card-background);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    transition: background-color 0.2s ease;
+    box-shadow: var(--shadow);
+}
+.todo-item.completed {
+    opacity: 0.6;
+    text-decoration: line-through;
+    color: var(--light-text-color);
+    background-color: var(--background-color);
+}
+
+.todo-item-check {
+    font-size: 24px;
+    line-height: 1;
+    font-variation-settings: 'FILL' 0;
+    color: var(--light-text-color);
+}
+
+.todo-item-check.checked {
+    font-variation-settings: 'FILL' 1;
+    color: var(--primary-color);
+}
+
+.todo-item-content {
+    flex-grow: 1;
+}
+
+.todo-item-title {
+    font-weight: 600;
+}
+
+.todo-item-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-left: auto;
+}
+
+
+/* --- File Page Styles --- */
+.file-list-category {
+    margin-bottom: 20px;
+}
+.file-list-category .category-header {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text-color);
+    padding-left: 10px;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background-color: var(--card-background);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s ease;
+    margin-bottom: 10px; /* Tambahkan baris ini untuk jarak bawah */
+}
+
+
+.file-item:hover {
+    transform: translateY(-2px);
+}
+
+.file-item.empty-link {
+    pointer-events: none;
+    cursor: default;
+    background-color: var(--background-color);
+    opacity: 0.6;
+    box-shadow: none;
+}
+
+.file-item-icon {
+    font-size: 40px;
+    color: var(--primary-color);
+    line-height: 1;
+}
+
+.file-item.empty-link .file-item-icon {
+    color: var(--light-text-color);
+}
+
+.file-item-details {
+    flex-grow: 1;
+}
+
+.file-item-description {
+    font-weight: 600;
+}
+
+/* --- Modal Styles --- */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background-color: var(--card-background);
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: var(--border-radius);
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    box-shadow: var(--shadow);
+}
+
+.close-button {
+    color: var(--light-text-color);
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.modal-content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto 15px;
+    border-radius: 8px;
+}
+
+.modal-content h3 {
+    margin-top: 0;
+    font-size: 24px;
+}
+
+.modal-detail-row {
+    margin-bottom: 10px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    font-size: 16px;
+}
+
+.modal-detail-row .material-symbols-rounded {
+    color: var(--light-text-color);
+}
+.modal-detail-row p {
+    margin: 0;
+}
+
+/* --- Snackbar Styles --- */
+.snackbar {
+  opacity: 0;
+  pointer-events: none;
+  min-width: 250px;
+  background-color: var(--primary-color);
+  color: #fff;
+  text-align: center;
+  border-radius: 8px;
+  padding: 12px 16px;
+  position: fixed;
+  z-index: 1100;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 16px;
+  transition: opacity 0.5s ease-out, bottom 0.5s ease-out;
+}
+
+.snackbar.show {
+  opacity: 1;
+  pointer-events: auto;
+  bottom: 20px;
+}
+
+.snackbar-icon {
+    font-size: 24px;
+    line-height: 1;
+    color: white;
+}
+
+.snackbar-message {
+    flex-grow: 1;
+    text-align: center;
+}
+
+.snackbar-success {
+  background-color: var(--primary-color);
+}
+.snackbar-error {
+  background-color: var(--tertiary-color);
+}
+
+/* Loading Spinner */
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid var(--primary-color);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+  display: none;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
