@@ -7,7 +7,6 @@ const RAB_SPREADSHEET_ID = '1WIonr2zdeR9ZNDVAgX0EcvsRGIKnOQTrHAgqygU50ZM';
 // Ganti dengan ID Spreadsheet untuk data Home, Todo, dan File
 const MAIN_SPREADSHEET_ID = '1y7hMfdLfgkRS3POqUMj5_9kdzpsOm22_ASmaUMf4G_A';
 
-
 // Nama sheet yang berisi data
 const DASHBOARD_SHEET = 'Dashboard';
 const PEMASUKAN_SHEET = 'Pemasukan';
@@ -383,14 +382,14 @@ function loadHomePageData() {
                 });
                 return obj;
             });
-
+            
             // Menyortir acara dari yang paling awal
             events.sort((a, b) => {
                 const dateA = parseDate(a['Start Date'], a['Start time']);
                 const dateB = parseDate(b['Start Date'], b['Start time']);
                 return dateA - dateB;
             });
-            
+
             renderEvents(events);
         } else {
             renderEvents([]);
