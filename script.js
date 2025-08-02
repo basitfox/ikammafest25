@@ -662,6 +662,7 @@ function renderFiles(files) {
 
 // --- HALAMAN AUDIO ---
 let currentAudioPlayer = null;
+let currentBackgroundAudioPlayer = null;
 let currentPlayingButton = null;
 let currentPlayingItem = null;
 let isPlaying = false;
@@ -669,8 +670,16 @@ let currentPlaylist = [];
 let currentPlaylistIndex = -1;
 let currentTotalDuration = 0;
 let timeElapsedInPlaylist = 0;
-let nextAudioLoaded = false;
 
+const BACKGROUND_VOLUME_DB = -10; // Nilai volume latar belakang dalam dB. Ubah di sini.
+
+function convertDbToLinear(db) {
+    const dbValue = parseFloat(db);
+    if (isNaN(dbValue) || dbValue > 0) {
+        return 1.0;
+    }
+    return Math.pow(10, dbValue / 20);
+}
 
 function parseTimeInSeconds(timeStr) {
     if (!timeStr) return 0;
@@ -686,7 +695,7 @@ function loadAudioPageData() {
     showSpinner('audioSpinner');
     gapi.client.sheets.spreadsheets.values.get({
         spreadsheetId: MAIN_SPREADSHEET_ID,
-        range: `${AUDIO_SHEET}!A:G`,
+        range: `${AUDIO_SHEET}!A:K`,
     }).then(response => {
         const values = response.result.values;
         if (values && values.length > 1) {
@@ -744,13 +753,22 @@ function renderAudioList(audioData) {
             const audioItem = document.createElement('div');
             audioItem.classList.add('audio-item');
             
-            const audioUrls = [
+            const mainAudioUrls = [
                 item.audio1,
                 item.audio2,
                 item.audio3,
                 item.audio4
             ].filter(url => url);
-    
+            
+            const bgUrl = item.bg || '';
+
+            const combinedPlaylist = mainAudioUrls.map((url) => ({
+                mainAudioUrl: url,
+                bgAudioUrl: bgUrl,
+                bgStartTime: item['bg start'] || '0:00',
+                bgEndTime: item['bg end'] || '0:00',
+            }));
+
             const playButton = document.createElement('button');
             playButton.classList.add('audio-player-button');
             playButton.innerHTML = `<span class="material-symbols-rounded">play_arrow</span>`;
@@ -767,11 +785,10 @@ function renderAudioList(audioData) {
             audioItem.appendChild(playButton);
             audioItem.insertAdjacentHTML('beforeend', progressBarHTML);
             
-            if (audioUrls.length > 0) {
-                // Pra-load hanya metadata untuk total durasi
-                preloadTotalDuration(audioUrls, audioItem);
+            if (combinedPlaylist.length > 0) {
+                preloadAudioMetadata(combinedPlaylist, audioItem);
                 playButton.addEventListener('click', () => {
-                    handleAudioControl(audioUrls, playButton, audioItem);
+                    handleAudioControl(combinedPlaylist, playButton, audioItem);
                 });
             } else {
                 playButton.disabled = true;
@@ -787,17 +804,18 @@ function renderAudioList(audioData) {
     }
 }
 
-function preloadTotalDuration(urls, audioItem) {
+function preloadAudioMetadata(combinedPlaylist, audioItem) {
     let totalDuration = 0;
     let loadedCount = 0;
-    const audios = urls.map(url => new Audio(url));
-
-    audios.forEach(audio => {
-        audio.preload = 'metadata';
+    const allUrls = combinedPlaylist.flatMap(item => [item.mainAudioUrl].filter(url => url));
+    
+    allUrls.forEach(url => {
+        const audio = new Audio();
+        audio.src = url;
         audio.addEventListener('loadedmetadata', () => {
             totalDuration += audio.duration;
             loadedCount++;
-            if (loadedCount === urls.length) {
+            if (loadedCount === allUrls.length) {
                 const durationElement = audioItem.querySelector('.audio-total-duration');
                 if (durationElement) {
                     durationElement.textContent = formatTime(totalDuration);
@@ -807,7 +825,7 @@ function preloadTotalDuration(urls, audioItem) {
         });
         audio.addEventListener('error', () => {
             loadedCount++;
-            if (loadedCount === urls.length) {
+            if (loadedCount === allUrls.length) {
                  const durationElement = audioItem.querySelector('.audio-total-duration');
                  if (durationElement) {
                      durationElement.textContent = 'N/A';
@@ -817,17 +835,19 @@ function preloadTotalDuration(urls, audioItem) {
     });
 }
 
-function handleAudioControl(urls, button, audioItem) {
+function handleAudioControl(combinedPlaylist, button, audioItem) {
     const icon = button.querySelector('.material-symbols-rounded');
 
     if (currentAudioPlayer && currentPlayingButton === button) {
         if (isPlaying) {
             currentAudioPlayer.pause();
+            if (currentBackgroundAudioPlayer) currentBackgroundAudioPlayer.pause();
             isPlaying = false;
             icon.textContent = 'play_arrow';
             audioItem.classList.remove('playing');
         } else {
             currentAudioPlayer.play();
+            if (currentBackgroundAudioPlayer) currentBackgroundAudioPlayer.play();
             isPlaying = true;
             icon.textContent = 'pause';
             audioItem.classList.add('playing');
@@ -837,18 +857,65 @@ function handleAudioControl(urls, button, audioItem) {
             stopAudio();
         }
         
-        currentPlaylist = urls;
+        currentPlaylist = combinedPlaylist;
         currentPlaylistIndex = 0;
         currentPlayingButton = button;
         currentPlayingItem = audioItem;
         isPlaying = true;
-        nextAudioLoaded = false;
         
         icon.textContent = 'pause';
         audioItem.classList.add('playing');
         
-        playNextAudioInPlaylist();
+        loadAllAudioAndPlay();
     }
+}
+
+function loadAllAudioAndPlay() {
+    const audioPromises = currentPlaylist.map(item => {
+        if (item.mainAudioUrl) {
+            return new Promise((resolve, reject) => {
+                const audio = new Audio(item.mainAudioUrl);
+                audio.preload = 'metadata';
+                audio.onloadedmetadata = () => resolve({ type: 'main', audio, item });
+                audio.onerror = () => reject(new Error(`Failed to load main audio metadata for ${item.mainAudioUrl}`));
+            });
+        }
+        return Promise.resolve(null);
+    });
+
+    Promise.all(audioPromises)
+        .then(() => {
+            timeElapsedInPlaylist = 0;
+            currentPlaylistIndex = 0;
+            
+            const mainAudioDurations = currentPlaylist.map(item => {
+                const audio = new Audio(item.mainAudioUrl);
+                return new Promise(resolve => {
+                    if (item.mainAudioUrl) {
+                        audio.onloadedmetadata = () => resolve(audio.duration);
+                        audio.onerror = () => resolve(0);
+                    } else {
+                        resolve(0);
+                    }
+                });
+            });
+
+            Promise.all(mainAudioDurations).then(durations => {
+                currentTotalDuration = durations.reduce((sum, duration) => sum + duration, 0);
+                const durationElement = currentPlayingItem.querySelector('.audio-total-duration');
+                if (durationElement) {
+                    durationElement.textContent = formatTime(currentTotalDuration);
+                }
+                currentPlayingItem.dataset.totalDuration = currentTotalDuration;
+                
+                playNextAudioInPlaylist();
+            });
+        })
+        .catch(error => {
+            console.error(error.message);
+            showSnackbar(false, 'Gagal memuat beberapa file audio. Cek kembali tautan.');
+            stopAudio();
+        });
 }
 
 function playNextAudioInPlaylist() {
@@ -857,27 +924,49 @@ function playNextAudioInPlaylist() {
         return;
     }
     
-    const audioUrl = currentPlaylist[currentPlaylistIndex];
-    currentAudioPlayer = new Audio(audioUrl);
+    const playlistItem = currentPlaylist[currentPlaylistIndex];
+    
+    currentAudioPlayer = new Audio(playlistItem.mainAudioUrl);
     currentAudioPlayer.play();
+
+    // Inisialisasi background music jika belum ada dan URL tersedia
+    if (!currentBackgroundAudioPlayer && playlistItem.bgAudioUrl && playlistItem.bgAudioUrl.trim() !== '') {
+        currentBackgroundAudioPlayer = new Audio(playlistItem.bgAudioUrl);
+        currentBackgroundAudioPlayer.volume = convertDbToLinear(BACKGROUND_VOLUME_DB);
+        currentBackgroundAudioPlayer.loop = true;
+    }
+
+    if (currentBackgroundAudioPlayer && !currentBackgroundAudioPlayer.paused) {
+        currentBackgroundAudioPlayer.play().catch(e => {
+            console.error("Failed to resume background audio:", e);
+        });
+    }
     
     const audioItem = currentPlayingItem;
+    const timeOffsetInPlaylist = timeElapsedInPlaylist;
+    const bgStartTimeInSeconds = parseTimeInSeconds(playlistItem.bgStartTime);
+    const bgEndTimeInSeconds = parseTimeInSeconds(playlistItem.bgEndTime);
 
     currentAudioPlayer.addEventListener('timeupdate', () => {
-        const currentTimeInPlaylist = timeElapsedInPlaylist + currentAudioPlayer.currentTime;
+        const currentTime = currentAudioPlayer.currentTime;
+        const currentTimeInPlaylist = timeOffsetInPlaylist + currentTime;
         const totalDuration = parseFloat(audioItem.dataset.totalDuration) || 0;
         const progress = (currentTimeInPlaylist / totalDuration) * 100;
+        
         audioItem.querySelector('.audio-progress-line').style.width = `${progress}%`;
         audioItem.querySelector('.audio-current-time').textContent = formatTime(currentTimeInPlaylist);
 
-        // Logika lazy loading: memuat file berikutnya saat file ini mencapai 50%
-        if (!nextAudioLoaded && currentPlaylistIndex + 1 < currentPlaylist.length) {
-            if (currentAudioPlayer.currentTime >= currentAudioPlayer.duration * 0.5) {
-                const nextAudioUrl = currentPlaylist[currentPlaylistIndex + 1];
-                const nextAudio = new Audio(nextAudioUrl);
-                nextAudio.preload = 'metadata';
-                nextAudioLoaded = true;
-                console.log(`Preloading next audio: ${nextAudioUrl}`);
+        if (currentBackgroundAudioPlayer) {
+            if (currentTimeInPlaylist >= bgStartTimeInSeconds && currentTimeInPlaylist < bgEndTimeInSeconds) {
+                if (currentBackgroundAudioPlayer.paused) {
+                    currentBackgroundAudioPlayer.play().catch(e => {
+                        console.error("Failed to resume background audio:", e);
+                    });
+                }
+            } else {
+                if (!currentBackgroundAudioPlayer.paused) {
+                    currentBackgroundAudioPlayer.pause();
+                }
             }
         }
     });
@@ -885,16 +974,14 @@ function playNextAudioInPlaylist() {
     currentAudioPlayer.addEventListener('ended', () => {
         timeElapsedInPlaylist += currentAudioPlayer.duration;
         currentPlaylistIndex++;
-        nextAudioLoaded = false; // Reset flag untuk file berikutnya
         playNextAudioInPlaylist();
     });
 
     currentAudioPlayer.addEventListener('error', (e) => {
-        console.error('Error playing audio:', e);
-        showSnackbar(false, `Gagal memutar audio: ${audioUrl}.`);
+        console.error('Error playing main audio:', e);
+        showSnackbar(false, `Gagal memutar audio: ${playlistItem.mainAudioUrl}.`);
         timeElapsedInPlaylist += (currentAudioPlayer.duration || 0);
         currentPlaylistIndex++;
-        nextAudioLoaded = false;
         playNextAudioInPlaylist();
     });
 }
@@ -905,12 +992,17 @@ function stopAudio() {
         currentAudioPlayer.currentTime = 0;
         currentAudioPlayer = null;
     }
+    if (currentBackgroundAudioPlayer) {
+        currentBackgroundAudioPlayer.pause();
+        currentBackgroundAudioPlayer.currentTime = 0;
+        currentBackgroundAudioPlayer = null;
+    }
+
     isPlaying = false;
     currentPlaylist = [];
     currentPlaylistIndex = -1;
     timeElapsedInPlaylist = 0;
     currentTotalDuration = 0;
-    nextAudioLoaded = false;
 
     if (currentPlayingButton) {
         const icon = currentPlayingButton.querySelector('.material-symbols-rounded');
