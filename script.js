@@ -149,11 +149,6 @@ document.addEventListener('DOMContentLoaded', function() {
             modal.style.display = "none";
         }
     }
-    
-    // Panggil gapiLoaded() di sini untuk memastikan fungsi sudah didefinisikan saat dipanggil.
-    if (typeof gapi !== 'undefined') {
-        gapiLoaded();
-    }
 });
 
 
@@ -674,7 +669,6 @@ let currentPlaylist = [];
 let currentPlaylistIndex = -1;
 let currentTotalDuration = 0;
 let timeElapsedInPlaylist = 0;
-let nextAudioLoaded = false;
 
 
 function parseTimeInSeconds(timeStr) {
@@ -843,11 +837,10 @@ function handleAudioControl(urls, button, audioItem) {
         }
         
         currentPlaylist = urls;
-        currentPlaylistIndex = -1; // Set ke -1 agar mulai dari 0
+        currentPlaylistIndex = 0;
         currentPlayingButton = button;
         currentPlayingItem = audioItem;
         isPlaying = true;
-        nextAudioLoaded = false;
         
         icon.textContent = 'pause';
         audioItem.classList.add('playing');
@@ -857,7 +850,6 @@ function handleAudioControl(urls, button, audioItem) {
 }
 
 function playNextAudioInPlaylist() {
-    currentPlaylistIndex++; // Pindah ke indeks berikutnya
     if (!isPlaying || currentPlaylistIndex >= currentPlaylist.length) {
         stopAudio();
         return;
@@ -875,21 +867,11 @@ function playNextAudioInPlaylist() {
         const progress = (currentTimeInPlaylist / totalDuration) * 100;
         audioItem.querySelector('.audio-progress-line').style.width = `${progress}%`;
         audioItem.querySelector('.audio-current-time').textContent = formatTime(currentTimeInPlaylist);
-
-        // Logika lazy loading: memuat file berikutnya saat file ini mencapai 50%
-        if (!nextAudioLoaded && currentPlaylistIndex + 1 < currentPlaylist.length) {
-            if (currentAudioPlayer.currentTime >= currentAudioPlayer.duration * 0.5) {
-                const nextAudioUrl = currentPlaylist[currentPlaylistIndex + 1];
-                const nextAudio = new Audio(nextAudioUrl);
-                nextAudio.preload = 'metadata';
-                nextAudioLoaded = true;
-            }
-        }
     });
     
     currentAudioPlayer.addEventListener('ended', () => {
         timeElapsedInPlaylist += currentAudioPlayer.duration;
-        nextAudioLoaded = false; // Reset flag untuk file berikutnya
+        currentPlaylistIndex++;
         playNextAudioInPlaylist();
     });
 
@@ -897,7 +879,7 @@ function playNextAudioInPlaylist() {
         console.error('Error playing audio:', e);
         showSnackbar(false, `Gagal memutar audio: ${audioUrl}.`);
         timeElapsedInPlaylist += (currentAudioPlayer.duration || 0);
-        nextAudioLoaded = false;
+        currentPlaylistIndex++;
         playNextAudioInPlaylist();
     });
 }
@@ -913,7 +895,6 @@ function stopAudio() {
     currentPlaylistIndex = -1;
     timeElapsedInPlaylist = 0;
     currentTotalDuration = 0;
-    nextAudioLoaded = false;
 
     if (currentPlayingButton) {
         const icon = currentPlayingButton.querySelector('.material-symbols-rounded');
