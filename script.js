@@ -149,6 +149,13 @@ document.addEventListener('DOMContentLoaded', function() {
             modal.style.display = "none";
         }
     }
+    
+    // Panggil gapiLoaded() setelah DOM selesai dimuat
+    if (typeof gapi !== 'undefined' && typeof gapi.load === 'function') {
+        gapiLoaded();
+    } else {
+        window.addEventListener('load', gapiLoaded);
+    }
 });
 
 

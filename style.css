@@ -833,28 +833,25 @@ body {
     bottom: 0;
     left: 0;
     width: 100%;
-    /* Atur tinggi jadi 0 agar hanya progress bar yang terlihat */
     height: 0px; 
     display: flex;
     align-items: center;
-    /* Perubahan di sini: justify-content untuk menyejajarkan item di kiri dan kanan */
-    justify-content: center; 
+    justify-content: center;
     padding: 0 10px;
     box-sizing: border-box;
     transition: all 0.3s ease;
 }
 
 .audio-item.playing .audio-item-footer {
-    /* Atur tinggi menjadi 30px saat playing untuk menampilkan info durasi */
     height: 30px; 
 }
 
 /* Progress bar yang menempel di bagian bawah */
 .audio-progress-line {
     position: absolute;
-    bottom: 0; /* Menempel di bagian bawah item */
+    bottom: 0;
     left: 0;
-    height: 7px; /* Ketebalan garis progress bar */
+    height: 3px;
     width: 0%;
     background-color: var(--primary-color);
     transition: background-color 0.2s ease;
@@ -866,14 +863,12 @@ body {
     display: flex;
     gap: 4px;
     align-items: center;
-    /* Sembunyikan info waktu secara default */
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s ease;
 }
 
 .audio-item.playing .audio-time-info {
-    /* Tampilkan info waktu saat playing */
     opacity: 1;
     visibility: visible;
 }
