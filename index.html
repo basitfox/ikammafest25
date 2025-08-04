@@ -12,29 +12,71 @@
     
     <div id="homePage" class="page active">
         <div class="header">
-            <img src="https://i.imgur.com/apJLWkd.png" alt="IKAMMA Fest 25 Logo">
+            <img src="icon.png" alt="IKAMMA Fest 25 Logo">
             <h1>Acara</h1>
         </div>
         <div class="event-section-container">
             <div class="section-title">On Going</div>
-            <div id="ongoingEventsList" class="event-card-list"></div>
-            <div class="spinner" id="ongoingSpinner"></div>
+            <div id="ongoingEventsList" class="event-card-list">
+                <div class="skeleton-event-card">
+                    <div class="skeleton-event-card-date"></div>
+                    <div class="skeleton-event-card-content">
+                        <div class="skeleton-card-line" style="width: 80%;"></div>
+                        <div class="skeleton-card-line" style="width: 60%;"></div>
+                    </div>
+                </div>
+                <div class="skeleton-event-card">
+                    <div class="skeleton-event-card-date"></div>
+                    <div class="skeleton-event-card-content">
+                        <div class="skeleton-card-line" style="width: 70%;"></div>
+                        <div class="skeleton-card-line" style="width: 50%;"></div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="event-section-container">
             <div class="section-title">Upcoming</div>
-            <div id="upcomingEventsList" class="event-card-list"></div>
-            <div class="spinner" id="upcomingSpinner"></div>
+            <div id="upcomingEventsList" class="event-card-list">
+                <div class="skeleton-event-card">
+                    <div class="skeleton-event-card-date"></div>
+                    <div class="skeleton-event-card-content">
+                        <div class="skeleton-card-line" style="width: 80%;"></div>
+                        <div class="skeleton-card-line" style="width: 60%;"></div>
+                    </div>
+                </div>
+                <div class="skeleton-event-card">
+                    <div class="skeleton-event-card-date"></div>
+                    <div class="skeleton-event-card-content">
+                        <div class="skeleton-card-line" style="width: 70%;"></div>
+                        <div class="skeleton-card-line" style="width: 50%;"></div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="event-section-container">
             <div class="section-title">Past</div>
-            <div id="pastEventsList" class="event-card-list"></div>
-            <div class="spinner" id="pastSpinner"></div>
+            <div id="pastEventsList" class="event-card-list">
+                <div class="skeleton-event-card">
+                    <div class="skeleton-event-card-date"></div>
+                    <div class="skeleton-event-card-content">
+                        <div class="skeleton-card-line" style="width: 80%;"></div>
+                        <div class="skeleton-card-line"></div>
+                    </div>
+                </div>
+                <div class="skeleton-event-card">
+                    <div class="skeleton-event-card-date"></div>
+                    <div class="skeleton-event-card-content">
+                        <div class="skeleton-card-line" style="width: 90%;"></div>
+                        <div class="skeleton-card-line"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <div id="rabPage" class="page">
       <div class="header">
-        <img src="https://i.imgur.com/apJLWkd.png" alt="IKAMMA Fest 25 Logo">
+        <img src="icon.png" alt="IKAMMA Fest 25 Logo">
         <h1>RAB</h1>
       </div>
 
@@ -43,7 +85,9 @@
           <span class="material-symbols-rounded fill-icon">account_balance</span>
           Total Saldo
         </div>
-        <div class="total-saldo" id="totalSaldo"></div>
+        <div class="total-saldo" id="totalSaldo">
+            <div class="skeleton-text large"></div>
+        </div>
         <div class="spinner" id="rabSpinner"></div>
       </div>
 
@@ -56,12 +100,16 @@
           <div class="info-box pemasukan">
             <span class="material-symbols-rounded fill-icon">arrow_circle_down</span>
             <div class="label">Total Pemasukan</div>
-            <div class="value" id="totalPemasukan"></div>
+            <div class="value" id="totalPemasukan">
+                <div class="skeleton-text small"></div>
+            </div>
           </div>
           <div class="info-box pengeluaran">
             <span class="material-symbols-rounded fill-icon">arrow_circle_up</span>
             <div class="label">Total Pengeluaran</div>
-            <div class="value" id="totalPengeluaran"></div>
+            <div class="value" id="totalPengeluaran">
+                <div class="skeleton-text small"></div>
+            </div>
           </div>
         </div>
         <div class="spinner" id="infoBoxSpinner"></div>
@@ -81,6 +129,9 @@
             </tr>
           </thead>
           <tbody id="categoryExpenses">
+                <tr><td><div class="skeleton-text small" style="width: 80%;"></div></td><td><div class="skeleton-text small"></div></td><td><div class="skeleton-text small"></div></td></tr>
+                <tr><td><div class="skeleton-text small" style="width: 70%;"></div></td><td><div class="skeleton-text small"></div></td><td><div class="skeleton-text small"></div></td></tr>
+                <tr><td><div class="skeleton-text small" style="width: 90%;"></div></td><td><div class="skeleton-text small"></div></td><td><div class="skeleton-text small"></div></td></tr>
             </tbody>
         </table>
         <div class="spinner" id="categoryExpensesSpinner"></div>
@@ -97,12 +148,22 @@
         </div>
         
         <div id="pemasukanTab" class="tab-content active">
-          <div id="pemasukanList" class="list-view"></div>
+          <div id="pemasukanList" class="list-view">
+              <div class="skeleton-card">
+                  <div class="skeleton-card-line"></div>
+                  <div class="skeleton-card-line"></div>
+              </div>
+          </div>
           <div class="spinner" id="pemasukanListSpinner"></div>
         </div>
 
         <div id="pengeluaranTab" class="tab-content">
-          <div id="pengeluaranList" class="list-view"></div>
+          <div id="pengeluaranList" class="list-view">
+              <div class="skeleton-card">
+                  <div class="skeleton-card-line"></div>
+                  <div class="skeleton-card-line"></div>
+              </div>
+          </div>
           <div class="spinner" id="pengeluaranListSpinner"></div>
         </div>
         
@@ -113,25 +174,37 @@
 
     <div id="todoPage" class="page">
         <div class="header">
-            <img src="https://i.imgur.com/apJLWkd.png" alt="IKAMMA Fest 25 Logo">
+            <img src="icon.png" alt="IKAMMA Fest 25 Logo">
             <h1>Todo List</h1>
         </div>
-        <div id="todoList" class="todo-list"></div>
+        <div id="todoList" class="todo-list">
+            <div class="todo-list-category">
+                <div class="skeleton-text small" style="width: 150px; margin-bottom: 10px;"></div>
+                <div class="skeleton-card"><div class="skeleton-card-line"></div></div>
+                <div class="skeleton-card"><div class="skeleton-card-line"></div></div>
+            </div>
+        </div>
         <div class="spinner" id="todoSpinner"></div>
     </div>
 
     <div id="filePage" class="page">
         <div class="header">
-            <img src="https://i.imgur.com/apJLWkd.png" alt="IKAMMA Fest 25 Logo">
+            <img src="icon.png" alt="IKAMMA Fest 25 Logo">
             <h1>File</h1>
         </div>
-        <div id="fileList" class="file-list"></div>
+        <div id="fileList" class="file-list">
+            <div class="file-list-category">
+                <div class="skeleton-text small" style="width: 120px; margin-bottom: 10px;"></div>
+                <div class="skeleton-card"><div class="skeleton-card-line"></div></div>
+                <div class="skeleton-card"><div class="skeleton-card-line"></div></div>
+            </div>
+        </div>
         <div class="spinner" id="fileSpinner"></div>
     </div>
 
     <div id="audioPage" class="page">
         <div class="header">
-            <img src="https://i.imgur.com/apJLWkd.png" alt="IKAMMA Fest 25 Logo">
+            <img src="icon.png" alt="IKAMMA Fest 25 Logo">
             <h1>Audio</h1>
         </div>
         <div class="section">
@@ -139,7 +212,13 @@
             <span class="material-symbols-rounded">volume_up</span>
             Daftar Audio
           </div>
-          <div id="audioGroupedList"></div>
+          <div id="audioGroupedList">
+            <div class="file-list-category">
+                <div class="skeleton-text small" style="width: 140px; margin-bottom: 10px;"></div>
+                <div class="skeleton-card"><div class="skeleton-card-line"></div></div>
+                <div class="skeleton-card"><div class="skeleton-card-line"></div></div>
+            </div>
+          </div>
           <div class="spinner" id="audioSpinner"></div>
         </div>
     </div>
@@ -180,7 +259,7 @@
     <span id="snackbarMessage" class="snackbar-message"></span>
   </div>
 
-  <script src="script.js"></script>
+  <script defer src="script.js"></script>
   <script async defer src="https://apis.google.com/js/api.js"></script>
 </body>
 </html>

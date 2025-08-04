@@ -66,6 +66,51 @@ function showSnackbar(isSuccess, message) {
     }, 3000);
 }
 
+// --- PENGELOLAAN SKELETON LOADING ---
+function showSkeleton(containerId) {
+    const container = document.getElementById(containerId);
+    if (container) {
+        container.style.display = 'flex';
+        // Logika untuk menampilkan skeleton yang sudah ada di HTML
+    }
+}
+function hideSkeleton(containerId) {
+    const container = document.getElementById(containerId);
+    if (container) {
+        container.style.display = 'none';
+        // Logika untuk menyembunyikan skeleton yang sudah ada di HTML
+    }
+}
+
+function renderSkeleton(containerId, type, count) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+        if (type === 'list-item') {
+            const skeletonCard = document.createElement('div');
+            skeletonCard.classList.add('skeleton-card');
+            skeletonCard.innerHTML = `
+                <div class="skeleton-card-line" style="width: ${Math.floor(Math.random() * (90 - 70 + 1)) + 70}%;"></div>
+                <div class="skeleton-card-line" style="width: ${Math.floor(Math.random() * (70 - 40 + 1)) + 40}%;"></div>
+            `;
+            container.appendChild(skeletonCard);
+        } else if (type === 'event-card') {
+             const skeletonCard = document.createElement('div');
+             skeletonCard.classList.add('event-card');
+             skeletonCard.innerHTML = `
+                <div class="event-card-date skeleton-text" style="width: 80px;"></div>
+                <div class="event-card-content">
+                    <div class="skeleton-card-line" style="width: 80%;"></div>
+                    <div class="skeleton-card-line" style="width: 60%;"></div>
+                </div>
+             `;
+             container.appendChild(skeletonCard);
+        }
+    }
+}
+
+
 // --- NAVIGASI DAN PENGELOLAAN HALAMAN ---
 function showPage(pageId) {
     // Stop audio jika ada yang sedang diputar saat pindah halaman
@@ -85,15 +130,16 @@ function showPage(pageId) {
     });
     document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
 
-    if (pageId === 'rabPage') {
+    // Tambahkan logika untuk memuat data hanya jika belum dimuat
+    if (pageId === 'rabPage' && !document.getElementById('totalSaldo').dataset.loaded) {
         loadAllInitialRABData();
-    } else if (pageId === 'todoPage') {
+    } else if (pageId === 'todoPage' && !document.getElementById('todoList').dataset.loaded) {
         loadTodoPageData();
-    } else if (pageId === 'filePage') {
+    } else if (pageId === 'filePage' && !document.getElementById('fileList').dataset.loaded) {
         loadFilePageData();
-    } else if (pageId === 'homePage') {
+    } else if (pageId === 'homePage' && !document.getElementById('ongoingEventsList').dataset.loaded) {
         loadHomePageData();
-    } else if (pageId === 'audioPage') {
+    } else if (pageId === 'audioPage' && !document.getElementById('audioGroupedList').dataset.loaded) {
         loadAudioPageData();
     }
 }
@@ -111,7 +157,14 @@ function showTab(tabName) {
 }
 
 // --- FUNGSI GAPI & INISIALISASI ---
-function gapiLoaded() {
+function initializeApp() {
+    // Pastikan gapi sudah dimuat
+    if (typeof gapi === 'undefined' || typeof gapi.load === 'undefined') {
+        // Coba lagi setelah jeda singkat
+        setTimeout(initializeApp, 100);
+        return;
+    }
+    
     gapi.load('client', initializeGapiClient);
 }
 
@@ -150,12 +203,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Panggil gapiLoaded() setelah DOM selesai dimuat
-    if (typeof gapi !== 'undefined' && typeof gapi.load === 'function') {
-        gapiLoaded();
-    } else {
-        window.addEventListener('load', gapiLoaded);
-    }
+    initializeApp();
 });
 
 
@@ -219,21 +267,33 @@ function displayList(data, containerId, type) {
 }
 
 function loadAllInitialRABData() {
+    // Hide skeleton and show spinner
+    document.getElementById('totalSaldo').innerHTML = '';
+    document.getElementById('totalPemasukan').innerHTML = '';
+    document.getElementById('totalPengeluaran').innerHTML = '';
+    document.getElementById('categoryExpenses').innerHTML = '';
+    document.getElementById('pemasukanList').innerHTML = '';
+    document.getElementById('pengeluaranList').innerHTML = '';
+
+    showSpinner('rabSpinner');
+    showSpinner('infoBoxSpinner');
+    showSpinner('categoryExpensesSpinner');
+    showSpinner('pemasukanListSpinner');
+    showSpinner('pengeluaranListSpinner');
+
     loadDashboardData();
     loadPemasukanList(5);
     loadPengeluaranList(5);
+    document.getElementById('totalSaldo').dataset.loaded = 'true';
 }
 
 function loadAllTransactions() {
+    document.getElementById('loadAllButton').style.display = 'none';
     loadPemasukanList(); 
     loadPengeluaranList();
 }
 
 function loadDashboardData() {
-    showSpinner('rabSpinner');
-    showSpinner('infoBoxSpinner');
-    showSpinner('categoryExpensesSpinner');
-
     gapi.client.sheets.spreadsheets.values.batchGet({
         spreadsheetId: RAB_SPREADSHEET_ID,
         ranges: DASHBOARD_RANGES,
@@ -378,10 +438,12 @@ function getTimeDifference(date1, date2) {
 
 
 function loadHomePageData() {
-    showSpinner('ongoingSpinner');
-    showSpinner('upcomingSpinner');
-    showSpinner('pastSpinner');
-    
+    // Menghapus skeleton saat data siap
+    // Dihapus: document.getElementById('ongoingEventsList').innerHTML = '';
+    // Dihapus: document.getElementById('upcomingEventsList').innerHTML = '';
+    // Dihapus: document.getElementById('pastEventsList').innerHTML = '';
+    // Dihapus: showSpinner('ongoingSpinner');
+
     gapi.client.sheets.spreadsheets.values.get({
         spreadsheetId: MAIN_SPREADSHEET_ID,
         range: `${ACARA_SHEET}!A:H`,
@@ -413,22 +475,32 @@ function loadHomePageData() {
         console.error('Error fetching acara list:', error);
         showSnackbar(false, 'Gagal memuat daftar acara: ' + error.message);
     }).finally(() => {
-        hideSpinner('ongoingSpinner');
-        hideSpinner('upcomingSpinner');
-        hideSpinner('pastSpinner');
+        // Dihapus: hideSpinner('ongoingSpinner');
+        // Dihapus: hideSpinner('upcomingSpinner');
+        // Dihapus: hideSpinner('pastSpinner');
+        document.getElementById('ongoingEventsList').dataset.loaded = 'true';
     });
 }
 
 function renderEvents(events) {
+    const ongoingContainer = document.querySelector('#homePage .event-section-container:nth-child(2)');
+    const upcomingContainer = document.querySelector('#homePage .event-section-container:nth-child(3)');
+    const pastContainer = document.querySelector('#homePage .event-section-container:nth-child(4)');
+
     const ongoingList = document.getElementById('ongoingEventsList');
     const upcomingList = document.getElementById('upcomingEventsList');
     const pastList = document.getElementById('pastEventsList');
-
+    
+    // Clear the existing content (including skeletons)
     ongoingList.innerHTML = '';
     upcomingList.innerHTML = '';
     pastList.innerHTML = '';
 
     const now = new Date();
+    
+    const ongoingEvents = [];
+    const upcomingEvents = [];
+    const pastEvents = [];
 
     events.forEach(event => {
         const startDate = parseDate(event['Start Date'], event['Start time']);
@@ -439,12 +511,15 @@ function renderEvents(events) {
         if (now >= startDate && now <= endDate) {
             eventType = 'ongoing';
             statusChipText = 'Berlangsung';
+            ongoingEvents.push(event);
         } else if (now < startDate) {
             eventType = 'upcoming';
             statusChipText = getTimeDifference(now, startDate);
+            upcomingEvents.push(event);
         } else {
             eventType = 'past';
             statusChipText = 'Selesai';
+            pastEvents.push(event);
         }
 
         const card = document.createElement('div');
@@ -469,6 +544,11 @@ function renderEvents(events) {
         else if (eventType === 'upcoming') upcomingList.appendChild(card);
         else pastList.appendChild(card);
     });
+
+    // Hide the section if there are no events in that category
+    ongoingContainer.style.display = ongoingEvents.length > 0 ? 'block' : 'none';
+    upcomingContainer.style.display = upcomingEvents.length > 0 ? 'block' : 'none';
+    pastContainer.style.display = pastEvents.length > 0 ? 'block' : 'none';
 }
 
 function showEventDetailModal(event) {
@@ -510,7 +590,10 @@ function showEventDetailModal(event) {
 
 // --- HALAMAN TODO ---
 function loadTodoPageData() {
+    // Sembunyikan skeleton dan tampilkan spinner
+    document.getElementById('todoList').innerHTML = '';
     showSpinner('todoSpinner');
+
     gapi.client.sheets.spreadsheets.values.get({
         spreadsheetId: MAIN_SPREADSHEET_ID,
         range: `${TODO_SHEET}!A:E`,
@@ -535,6 +618,7 @@ function loadTodoPageData() {
         showSnackbar(false, 'Gagal memuat daftar todo: ' + error.message);
     }).finally(() => {
         hideSpinner('todoSpinner');
+        document.getElementById('todoList').dataset.loaded = 'true';
     });
 }
 
@@ -588,7 +672,10 @@ function renderTodos(todos) {
 
 // --- HALAMAN FILE ---
 function loadFilePageData() {
+    // Sembunyikan skeleton dan tampilkan spinner
+    document.getElementById('fileList').innerHTML = '';
     showSpinner('fileSpinner');
+
     gapi.client.sheets.spreadsheets.values.get({
         spreadsheetId: MAIN_SPREADSHEET_ID,
         range: `${FILE_SHEET}!A:C`,
@@ -613,6 +700,7 @@ function loadFilePageData() {
         showSnackbar(false, 'Gagal memuat daftar file: ' + error.message);
     }).finally(() => {
         hideSpinner('fileSpinner');
+        document.getElementById('fileList').dataset.loaded = 'true';
     });
 }
 
@@ -674,7 +762,6 @@ let currentPlayingItem = null;
 let isPlaying = false;
 let currentPlaylist = [];
 let currentPlaylistIndex = -1;
-let currentTotalDuration = 0;
 let timeElapsedInPlaylist = 0;
 
 
@@ -689,7 +776,10 @@ function parseTimeInSeconds(timeStr) {
 
 
 function loadAudioPageData() {
+    // Sembunyikan skeleton dan tampilkan spinner
+    document.getElementById('audioGroupedList').innerHTML = '';
     showSpinner('audioSpinner');
+
     gapi.client.sheets.spreadsheets.values.get({
         spreadsheetId: MAIN_SPREADSHEET_ID,
         range: `${AUDIO_SHEET}!A:G`,
@@ -713,6 +803,7 @@ function loadAudioPageData() {
         showSnackbar(false, 'Gagal memuat daftar audio: ' + error.message);
     }).finally(() => {
         hideSpinner('audioSpinner');
+        document.getElementById('audioGroupedList').dataset.loaded = 'true';
     });
 }
 
@@ -901,7 +992,6 @@ function stopAudio() {
     currentPlaylist = [];
     currentPlaylistIndex = -1;
     timeElapsedInPlaylist = 0;
-    currentTotalDuration = 0;
 
     if (currentPlayingButton) {
         const icon = currentPlayingButton.querySelector('.material-symbols-rounded');
@@ -912,12 +1002,17 @@ function stopAudio() {
         currentPlayingItem.classList.remove('playing');
         currentPlayingItem.querySelector('.audio-progress-line').style.width = '0%';
         currentPlayingItem.querySelector('.audio-current-time').textContent = '0:00';
-        currentPlayingItem.querySelector('.audio-total-duration').textContent = '0:00';
+        // Ambil durasi total dari dataset untuk mencegah reset
+        const totalDuration = currentPlayingItem.dataset.totalDuration;
+        if (totalDuration) {
+            currentPlayingItem.querySelector('.audio-total-duration').textContent = formatTime(parseFloat(totalDuration));
+        }
         currentPlayingItem = null;
     }
 }
 
 function formatTime(seconds) {
+    if (isNaN(seconds) || seconds < 0) return '0:00';
     const min = Math.floor(seconds / 60);
     const sec = Math.floor(seconds % 60);
     return `${min}:${sec < 10 ? '0' : ''}${sec}`;

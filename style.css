@@ -1,5 +1,4 @@
 /* style.css */
-@import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
 
 :root {
@@ -17,7 +16,7 @@
 }
 
 body {
-  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   margin: 0;
   padding: 0;
   background-color: var(--background-color);
@@ -775,6 +774,77 @@ body {
   100% { transform: rotate(360deg); }
 }
 
+/* --- Skeleton Loading --- */
+.skeleton-text {
+  background-color: var(--border-color);
+  border-radius: 4px;
+  animation: pulse 1.5s infinite ease-in-out;
+  height: 1em;
+}
+
+.skeleton-text.large {
+  width: 70%;
+  height: 32px;
+  margin: 10px auto;
+}
+
+.skeleton-text.small {
+  width: 100%;
+  height: 16px;
+  margin-top: 5px;
+}
+
+.skeleton-card {
+  background-color: var(--card-background);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: 15px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.skeleton-card-line {
+  background-color: var(--border-color);
+  height: 16px;
+  border-radius: 4px;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.skeleton-card-line:nth-child(1) { width: 90%; }
+.skeleton-card-line:nth-child(2) { width: 60%; }
+.skeleton-card-line:nth-child(3) { width: 80%; }
+
+/* Tambahan CSS untuk skeleton home page */
+.skeleton-event-card {
+    background-color: var(--card-background);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    display: flex;
+}
+.skeleton-event-card-date {
+    width: 80px;
+    height: 80px;
+    background-color: var(--border-color);
+    animation: pulse 1.5s infinite ease-in-out;
+}
+.skeleton-event-card-content {
+    flex-grow: 1;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+
+@keyframes pulse {
+  0% { opacity: 0.7; }
+  50% { opacity: 0.3; }
+  100% { opacity: 0.7; }
+}
+
+
 /* --- Audio Page Styles --- */
 .audio-item {
     display: flex;
@@ -870,5 +940,26 @@ body {
 
 .audio-item.playing .audio-time-info {
     opacity: 1;
+    visibility: visible;
+}
+
+/* Sembunyikan teks ikon saat font belum dimuat */
+.material-symbols-rounded {
+    visibility: hidden;
+}
+
+/* Tampilkan kembali ikon setelah font dimuat */
+@font-face {
+    font-family: 'Material Symbols Rounded';
+    /* Sesuaikan path font jika perlu */
+    src: url('https://fonts.gstatic.com/s/materialsymbolsrounded/v179/kfzFvgEW-cRzU-J_m_iM_zSjTzR21J611_Y5_w.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: block; /* Mencegah flash of unstyled text */
+}
+
+/* Gunakan font-face untuk memastikan font dimuat sebelum konten ditampilkan */
+.material-symbols-rounded {
+    font-family: 'Material Symbols Rounded';
     visibility: visible;
 }
